@@ -6,7 +6,12 @@
         </h2>
     </x-slot>
 
-    <a href="{{ route('knowledge.create') }}"> 新規登録 </a>
+    <x-page-actions>
+        <a href="{{ route('knowledge.create') }}">新規登録</a>
+    </x-page-actions>
+    
+    <x-page-container>
+    
     {{-- ナレッジ一覧 --}}
     <div class="space-y-4">
         @forelse ($knowledges as $knowledge)
@@ -22,10 +27,7 @@
                     <p class="mt-2 text-sm text-gray-500">
                         カテゴリー：{{ $knowledge->category->name }}
                     </p>
-                    {{-- 内容 --}}
-                    <p class="mt-4 text-gray-600">
-                        {{ Str::limit($knowledge->content, 150) }}
-                    </p>
+
                 </div>
             </article>
         @empty
@@ -36,5 +38,6 @@
     <div class="mt-6">
         {{ $knowledges->links() }}
     </div>
+</x-page-container>
 
 </x-app-layout>
