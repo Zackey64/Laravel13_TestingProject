@@ -1,9 +1,7 @@
 # 技術ナレッジ管理システム
 
-
 ## 概要
 勉強したことを蓄積する。
-
 
 ## ＥＲ図
 ```mermaid
@@ -11,7 +9,6 @@ erDiagram
     CATEGORIES ||--o{ KNOWLEDGE : "has many"
     KNOWLEDGE ||--o{ KNOWLEDGE_TAG : "has many"
     TAGS ||--o{ KNOWLEDGE_TAG : "has many"
-
 
     KNOWLEDGE {
         bigint id PK
@@ -28,8 +25,6 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-
-
 
     TAGS {
         bigint id PK
