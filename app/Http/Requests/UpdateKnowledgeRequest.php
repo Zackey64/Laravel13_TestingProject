@@ -22,7 +22,7 @@ class UpdateKnowledgeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'category_id' => ['required', 'string', 'exists:categories,id'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
         ];

@@ -2,33 +2,47 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
+use App\Enums\KnowledgeStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Carbon;
 
 /**
  * ナレッジEloquentモデル
- *
- * @property int $id
- * @property int $category_id
- * @property string $title
- * @property string $content
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Category $category
- * @property-read Collection<int, Tag> $tags
  */
 class Knowledge extends Model
 {
+    use HasFactory, HasUlids;
+
     protected $fillable = [
         'category_id',
         'title',
         'content',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'status' => KnowledgeStatus::class,
+        ];
+    }
+
     /**
+     * ユーザーを取得する
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * カテゴリを取得する
+     *
      * @return BelongsTo<Category, $this>
      */
     public function category(): BelongsTo
@@ -37,10 +51,28 @@ class Knowledge extends Model
     }
 
     /**
+     * タグを取得する
+     *
      * @return BelongsToMany<Tag, $this>
      */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * 公開されているナレッジのみを取得するスコープ
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', KnowledgeStatus::PUBLISHED);
+    }
+
+    /**
+     * 下書きのナレッジのみを取得するスコープ
+     */
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('status', KnowledgeStatus::DRAFT);
     }
 }

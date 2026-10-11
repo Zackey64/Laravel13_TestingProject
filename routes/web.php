@@ -18,6 +18,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('knowledge', KnowledgeController::class);
+    Route::patch('knowledge/{knowledge}/publish', [KnowledgeController::class, 'publish'])->name('knowledge.publish');
+    Route::patch('knowledge/{knowledge}/draft', [KnowledgeController::class, 'draft'])->name('knowledge.draft');
 });
 
 require __DIR__.'/auth.php';

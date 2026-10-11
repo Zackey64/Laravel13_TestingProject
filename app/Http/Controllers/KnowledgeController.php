@@ -2,21 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\KnowledgeStatus;
 use App\Http\Requests\StoreKnowledgeRequest;
 use App\Http\Requests\UpdateKnowledgeRequest;
 use App\Models\Category;
 use App\Models\Knowledge;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class KnowledgeController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * ナレッジ一覧を表示
      */
     public function index(): View
     {
-        $knowledges = Knowledge::with('category')->latest()->paginate(10);
+        $knowledges = Knowledge::published()
+            ->with('category')
+            ->latest()
+            ->paginate(10);
 
         return view('knowledge.index', compact('knowledges'));
     }
@@ -26,6 +33,8 @@ class KnowledgeController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Knowledge::class);
+
         $categories = Category::all();
 
         return view('knowledge.create', compact('categories'));
@@ -36,7 +45,11 @@ class KnowledgeController extends Controller
      */
     public function store(StoreKnowledgeRequest $request): RedirectResponse
     {
-        $knowledge = Knowledge::create($request->validated());
+        $this->authorize('create', Knowledge::class);
+
+        $validated = $request->validated();
+
+        $knowledge = auth()->user()->knowledges()->create($validated);
 
         return redirect()->route('knowledge.show', $knowledge)
             ->with('success', 'ナレッジを登録しました。');
@@ -57,6 +70,8 @@ class KnowledgeController extends Controller
      */
     public function edit(Knowledge $knowledge): View
     {
+        $this->authorize('update', $knowledge);
+
         $categories = Category::all();
 
         return view('knowledge.edit', compact('knowledge', 'categories'));
@@ -67,7 +82,11 @@ class KnowledgeController extends Controller
      */
     public function update(UpdateKnowledgeRequest $request, Knowledge $knowledge): RedirectResponse
     {
-        $knowledge->update($request->validated());
+        $this->authorize('update', $knowledge);
+
+        $validated = $request->validated();
+
+        $knowledge->update($validated);
 
         return redirect()->route('knowledge.show', $knowledge)
             ->with('success', 'ナレッジを更新しました。');
@@ -78,9 +97,47 @@ class KnowledgeController extends Controller
      */
     public function destroy(Knowledge $knowledge): RedirectResponse
     {
+        $this->authorize('delete', $knowledge);
+
         $knowledge->delete();
 
         return redirect()->route('knowledge.index')
             ->with('success', 'ナレッジを削除しました。');
+    }
+
+    /**
+     * ナレッジを公開する
+     */
+    public function publish(Knowledge $knowledge): RedirectResponse
+    {
+        $this->authorize('update', $knowledge);
+
+        if ($knowledge->status === KnowledgeStatus::PUBLISHED) {
+            return redirect()->route('knowledge.show', $knowledge)
+                ->with('info', 'ナレッジは既に公開の状態です。');
+        }
+
+        $knowledge->update(['status' => KnowledgeStatus::PUBLISHED]);
+
+        return redirect()->route('knowledge.show', $knowledge)
+            ->with('success', 'ナレッジを公開しました。');
+    }
+
+    /**
+     * ナレッジを下書きに戻す
+     */
+    public function draft(Knowledge $knowledge): RedirectResponse
+    {
+        $this->authorize('update', $knowledge);
+
+        if ($knowledge->status === KnowledgeStatus::DRAFT) {
+            return redirect()->route('knowledge.show', $knowledge)
+                ->with('info', 'ナレッジは既に下書の状態です。');
+        }
+
+        $knowledge->update(['status' => KnowledgeStatus::DRAFT]);
+
+        return redirect()->route('knowledge.show', $knowledge)
+            ->with('success', 'ナレッジを下書きに戻しました。');
     }
 }

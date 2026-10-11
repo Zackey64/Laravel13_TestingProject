@@ -12,7 +12,7 @@ class Markdown extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct( public string $content )
+    public function __construct(public string $content)
     {
         //
     }
@@ -22,7 +22,8 @@ class Markdown extends Component
      */
     public function render(): View|Closure|string
     {
-        $converter = new CommonMarkConverter();
+        $converter = new CommonMarkConverter;
+
         return view('components.markdown', [
             'html' => $converter->convert($this->content),
         ]);

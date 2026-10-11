@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\KnowledgeStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,10 +13,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('knowledge', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlId('category_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('content');
+            $table->string('status')->default(KnowledgeStatus::DRAFT->value);
             $table->timestamps();
         });
     }
