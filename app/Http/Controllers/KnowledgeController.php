@@ -60,7 +60,7 @@ class KnowledgeController extends Controller
      */
     public function show(Knowledge $knowledge): View
     {
-        $knowledge->load(['category', 'tags']);
+        $knowledge->load(['category', 'tags', 'rootNodes.descendants']);
 
         return view('knowledge.show', compact('knowledge'));
     }

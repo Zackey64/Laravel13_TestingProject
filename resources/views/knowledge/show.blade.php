@@ -21,10 +21,26 @@
 
     <x-page-container>
         <div class="px-4 py-8 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <h1>{{ $knowledge->title }}</h1>
-            <p>{{ $knowledge->category->name }} </p>
-            <x-markdown :content="$knowledge->content" />
-        <div>
+            <h1 class="text-2xl font-bold">
+                {{ $knowledge->title }}
+            </h1>
+
+            @if ($knowledge->category)
+                <p class="mt-2 text-sm text-gray-500">
+                    {{ $knowledge->category->name }}
+                </p>
+            @endif
+
+            <div class="mt-6 space-y-6">
+                @forelse ($knowledge->rootNodes as $node)
+                    @include('knowledge.nodes', ['node' => $node])
+                @empty
+                    <p class="text-gray-500">
+                        まだ内容が登録されていません。
+                    </p>
+                @endforelse
+            </div>
+        </div>
     </x-page-container>
 
 </x-app-layout>

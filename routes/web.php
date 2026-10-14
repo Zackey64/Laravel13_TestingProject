@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\KnowledgeNodeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('knowledge', KnowledgeController::class);
     Route::patch('knowledge/{knowledge}/publish', [KnowledgeController::class, 'publish'])->name('knowledge.publish');
     Route::patch('knowledge/{knowledge}/draft', [KnowledgeController::class, 'draft'])->name('knowledge.draft');
+
+    Route::post('/knowledge/{knowledge}/nodes', [KnowledgeNodeController::class, 'store'])
+        ->name('knowledge.nodes.store');
+
+    Route::put('/knowledge/{knowledge}/nodes/{node}', [KnowledgeNodeController::class, 'update'])
+        ->name('knowledge.nodes.update');
+
+    Route::delete('/knowledge/{knowledge}/nodes/{node}', [KnowledgeNodeController::class, 'destroy'])
+        ->name('knowledge.nodes.destroy');
 });
 
 require __DIR__.'/auth.php';

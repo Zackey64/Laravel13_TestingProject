@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             TagSeeder::class,
             KnowledgeSeeder::class,
+            KnowledgeNodeSeeder::class,
 
         ]);
     }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * ナレッジEloquentモデル
@@ -58,6 +59,28 @@ class Knowledge extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * ルートノードを取得する
+     *
+     * @return HasMany<KnowledgeNode, $this>
+     */
+    public function rootNodes(): HasMany
+    {
+        return $this->hasMany(KnowledgeNode::class)
+            ->whereNull('parent_id')
+            ->orderBy('sort_order');
+    }
+
+    /**
+     * 全てのノードを取得する
+     *
+     * @return HasMany<KnowledgeNode, $this>
+     */
+    public function nodes(): HasMany
+    {
+        return $this->hasMany(KnowledgeNode::class);
     }
 
     /**
